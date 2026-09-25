@@ -10,7 +10,7 @@ import Diagnostics from './components/Diagnostics';
 import { mockScanData } from './data/mockData';
 
 export default function App() {
-  const [scanResult, setScanResult] = useState(mockScanData);
+ const [scanResult, setScanResult] = useState(null);
 
   return (
     <BrowserRouter>

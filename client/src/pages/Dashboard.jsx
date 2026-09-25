@@ -22,14 +22,33 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export default function Dashboard({ scanResult, setScanResult }) {
+export default function Dashboard({
+  scanResult,
+  setScanResult,
+}) {
   const [isScanning, setIsScanning] = useState(false);
+
+  // Do not display initial mock data as if it were a real scan.
+  const [hasRealScan, setHasRealScan] = useState(false);
+
   const [activeBoardView, setActiveBoardView] = useState('full');
   const [scanAlert, setScanAlert] = useState(null);
   const resultsRef = useRef(null);
   const navigate = useNavigate();
 
+  const activeScan = hasRealScan ? scanResult : null;
+
+  /**
+   * Called by FileUploader after the backend returns a successful scan.
+   */
   const handleScanComplete = (apiData) => {
+    console.log("Dashboard received scan result:", apiData);
+
+    if (!apiData || !apiData.scanId) {
+      console.error("Invalid scan response:", apiData);
+      return;
+    }
+
     setScanResult(apiData);
     setScanAlert(`Forensic Carving Complete! Case #${apiData.scanId} — ${apiData.summary?.filesRecovered || 0} files verified intact.`);
     setTimeout(() => {
@@ -49,20 +68,24 @@ export default function Dashboard({ scanResult, setScanResult }) {
   const currentArtifacts = scanResult?.artifacts || [];
 
   return (
-    <div className="space-y-8 max-w-full">
-      {/* Evidence Board Top Banner */}
-      <div className="ink-card rounded-lg p-6 relative border border-[#2F2926]">
-        <div className="evidence-pin evidence-pin-top-left"></div>
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pl-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rubber-stamp text-xs">
-                OFFICIAL CASE EVIDENCE BOARD
-              </span>
-              <span className="text-xs font-mono text-[#D8C39A]">
-                BRANCH: member-2
-              </span>
+    <div className="space-y-8">
+      {/* Top Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900/40 via-purple-900/20 to-sky-900/30 border border-indigo-500/20 p-5 sm:p-6 shadow-xl backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 mt-1 sm:mt-0">
+              <Sparkles className="w-5 h-5 text-sky-400" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                RecoverIQ Forensic Investigation Workspace
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                  BRANCH: member-2
+                </span>
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Heuristic carving pipeline, cryptographic integrity verification, and ledger extraction.
+              </p>
             </div>
             <h1 className="font-document text-2xl font-bold text-[#F2EFE9] mt-2 tracking-tight">
               Digital Forensics & Reconstruction Workspace

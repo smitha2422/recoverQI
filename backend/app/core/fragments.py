@@ -17,6 +17,7 @@ class Fragment:
     end_offset: int
     size: int
     data: bytes
+    is_complete: bool = True
 
     @property
     def is_valid(self) -> bool:
@@ -32,14 +33,19 @@ class Fragment:
         )
 
 
-def create_fragments(carved_files: list[dict]) -> list[Fragment]:
+def create_fragments(
+    carved_files: list[dict],
+) -> list[Fragment]:
     """
     Convert carved file candidates into Fragment objects.
     """
 
     fragments = []
 
-    for index, candidate in enumerate(carved_files, start=1):
+    for index, candidate in enumerate(
+        carved_files,
+        start=1,
+    ):
 
         fragment = Fragment(
             fragment_id=index,
@@ -48,6 +54,10 @@ def create_fragments(carved_files: list[dict]) -> list[Fragment]:
             end_offset=candidate["end_offset"],
             size=candidate["size"],
             data=candidate["data"],
+            is_complete=candidate.get(
+                "is_complete",
+                True,
+            ),
         )
 
         if fragment.is_valid:
